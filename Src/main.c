@@ -23,8 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <string.h>
-#include <stdio.h>
+//#include "HR.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,7 +43,13 @@
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
 
+TIM_HandleTypeDef htim2;
+
 /* USER CODE BEGIN PV */
+
+//austins variables
+
+
 
 /* USER CODE END PV */
 
@@ -52,7 +57,12 @@ I2C_HandleTypeDef hi2c1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
+
+//make func defs
+uint8_t HR_INIT(void); //Start Algorithm
+uint8_t HR_READ(uint8_t * received_data); //
 
 /* USER CODE END PFP */
 
@@ -91,8 +101,33 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
+//Set 32664 to open in application mode
+//set RSTN high
+  /*
+  HAL_GPIO_WritePin(GPIOB, HR_MFIO_Pin, GPIO_PIN_RESET);
+  HAL_Delay(10);
+  HAL_GPIO_WritePin(GPIOB, HR_RESET_Pin, GPIO_PIN_RESET);
+  HAL_Delay(3);
+  HAL_GPIO_WritePin(GPIOB, HR_MFIO_Pin, GPIO_PIN_SET); //should MFIO be already low? cant find in datasheet
+  HAL_Delay(7);
+  HAL_GPIO_WritePin(GPIOB, HR_RESET_Pin, GPIO_PIN_SET);
+  HAL_Delay(1000);	//will have to replace with timer later
+*/
+  //HOST CONFIGURES MFIO AS INPUT INTERRUPT PIN ??????
+
+//Call HR initialization code after putting 32664 into application mode
+ /*if(HR_INIT() == 0) //equals 0 means initialization failed - do something? make while loop that runs until it isnt 0?
+ {
+	 asm("NOP");
+ }
+*/
+
+//uint8_t received_data[24];
+//uint8_t err_flag_read;
+	uint8_t arr_1_2[3] = {0x10, 0x00, 0x03};
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -102,6 +137,27 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+/*
+	  err_flag_read = HR_READ(received_data);
+	  if(err_flag_read == 1)
+	  {
+		  asm("NOP");
+	  }
+
+	  uint16_t heartrate  = {received_data[17], received_data[18]};
+	  uint8_t  HR_conf    =  received_data[19];
+	  uint16_t spo2 	    = {received_data[20], received_data[21]};
+	  uint8_t  alg_state  =  received_data[22];
+	  uint8_t  alg_status =  received_data[23];
+
+	 // if((alg_state == 0x03) && (alg_status == 0x00))
+	  //{
+	  //	nop;
+	  //}
+*/
+
+		HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_1_2, sizeof(arr_1_2), 1000);
+
   }
   /* USER CODE END 3 */
 }
@@ -198,6 +254,51 @@ static void MX_I2C1_Init(void)
 }
 
 /**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 2097-1;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 1000-1;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -222,6 +323,105 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+
+uint8_t HR_INIT()
+{
+	//HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData, uint16_t Size, uint32_t Timeout)
+	//HAL_I2C_Master_Receive(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData, uint16_t Size, uint32_t Timeout)
+
+	//1.2 - set output mode to sensor
+	uint8_t arr_1_2[3] = {0x10, 0x00, 0x03};
+	HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_1_2, sizeof(arr_1_2), 1000);
+	uint8_t receive_buff;
+	HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+	if(receive_buff != 0x00)
+	{
+		return 1;
+	}
+
+	//1.3 - Set sensor hub interrupt threshold
+	uint8_t arr_1_3[3] = {0x10, 0x01, 0x0F};
+	HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_1_3, sizeof(arr_1_3), 1000);
+	HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+	if(receive_buff != 0x00)
+	{
+		return 1;
+	}
+
+	//1.4 - Enable AGC
+	uint8_t arr_1_4[3] = {0x52, 0x00, 0x01};
+	HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_1_4, sizeof(arr_1_4), 1000);
+	HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+	if(receive_buff != 0x00)
+	{
+		return 1;
+	}
+
+	//1.6 - Enable AFE
+	uint8_t arr_1_6[3] = {0x44, 0x03, 0x01};
+	HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_1_6, sizeof(arr_1_6), 1000);
+	HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+	if(receive_buff != 0x00)
+	{
+		return 1;
+	}
+
+	//1.7 - Enable HR/SpO2 Algorithm
+	uint8_t arr_1_7[3] = {0x52, 0x02, 0x01};
+	HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_1_7, sizeof(arr_1_7), 1000);
+	HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+	if(receive_buff != 0x00)
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+
+uint8_t HR_READ(uint8_t * receive_data)
+{
+	//2.1 - Data finished when bit3 of AA0000 is full (DATARDYINT)
+	uint8_t arr_2_1[2] = {0x00, 0x00};
+	HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_2_1, sizeof(arr_2_1), 1000);
+	uint8_t receive_hub[2];
+	HAL_I2C_Master_Receive(&hi2c1, 0xAB, receive_hub, sizeof(receive_hub), 1000);
+	if(receive_hub[0] != 0x00)   //failed read
+	{
+		return 1;
+	}
+
+	while(receive_hub[1] != 0x08)
+	{
+		HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_2_1, sizeof(arr_2_1), 1000);
+		HAL_I2C_Master_Receive(&hi2c1, 0xAB, receive_hub, sizeof(receive_hub), 1000);
+	}
+
+	//2.2 - get number of samples in FIFO
+	uint8_t arr_2_2[2] = {0x12, 0x00};
+	HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_2_2, sizeof(arr_2_2), 1000);
+	HAL_I2C_Master_Receive(&hi2c1, 0xAB, receive_hub, sizeof(receive_hub), 1000);
+	if(receive_hub[0] != 0x00)	//failed read
+	{
+		return 1;
+	}
+
+	//2.3 - read all samples from FIFO
+	uint8_t arr_2_3[2] = {0x12, 0x01};
+	HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_2_3, sizeof(arr_2_3), 1000);
+	//uint8_t receive_data[24];
+	HAL_I2C_Master_Receive(&hi2c1, 0xAB, receive_data, sizeof(receive_data), 1000);
+
+	return 0;
+}
+
+
+
+
+
+
+
 
 /* USER CODE END 4 */
 
