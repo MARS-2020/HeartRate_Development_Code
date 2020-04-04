@@ -15,11 +15,11 @@
 				<configuration artifactExtension="elf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="com.atollic.truestudio.exe.debug.1518366166" name="Debug" parent="com.atollic.truestudio.exe.debug" postbuildStep="arm-atollic-eabi-objcopy.exe -O ihex &quot;${BuildArtifactFileBaseName}.elf&quot; &quot;${BuildArtifactFileBaseName}.hex&quot;" prebuildStep="">
 					<folderInfo id="com.atollic.truestudio.exe.debug.1518366166.2031504340" name="/" resourcePath="">
 						<toolChain id="com.atollic.truestudio.exe.debug.toolchain.683225115" name="Atollic ARM Tools" superClass="com.atollic.truestudio.exe.debug.toolchain">
-							<option id="com.atollic.truestudio.general.runtimelib.1642527132" superClass="com.atollic.truestudio.general.runtimelib" value="com.atollic.truestudio.ld.general.clib.small" valueType="enumerated" />
-							<option id="com.atollic.truestudio.toolchain_options.mcu.1214951527" superClass="com.atollic.truestudio.toolchain_options.mcu" value="STM32L053C8" valueType="string" />
-							<option id="com.atollic.truestudio.toolchain_options.vendor.1959997983" superClass="com.atollic.truestudio.toolchain_options.vendor" value="STMicroelectronics" valueType="string" />
+							<option id="com.atollic.truestudio.general.runtimelib.569984633" superClass="com.atollic.truestudio.general.runtimelib" value="com.atollic.truestudio.ld.general.clib.small" valueType="enumerated" />
+							<option id="com.atollic.truestudio.toolchain_options.mcu.1538979479" superClass="com.atollic.truestudio.toolchain_options.mcu" value="STM32L053C8" valueType="string" />
+							<option id="com.atollic.truestudio.toolchain_options.vendor.625542148" superClass="com.atollic.truestudio.toolchain_options.vendor" value="STMicroelectronics" valueType="string" />
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.atollic.truestudio.exe.debug.toolchain.platform.2054752829" isAbstract="false" name="Debug platform" superClass="com.atollic.truestudio.exe.debug.toolchain.platform" />
-							<builder buildPath="${workspace_loc:/HeartRate_Development_Code}/Debug" id="com.atollic.truestudio.mbs.builder1.1222194476" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="com.atollic.truestudio.mbs.builder1">
+							<builder buildPath="${workspace_loc:/HR_Development_CodeV2}/Debug" id="com.atollic.truestudio.mbs.builder1.1222194476" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="com.atollic.truestudio.mbs.builder1">
 								<outputEntries>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Debug" />
 								</outputEntries>
@@ -114,7 +114,7 @@
 								<option id="com.atollic.truestudio.common_options.target.fpucore.1297069055" name="FPU" superClass="com.atollic.truestudio.common_options.target.fpucore" value="com.atollic.truestudio.common_options.target.fpucore.None" valueType="enumerated" />
 							</tool>
 							<tool id="com.atollic.truestudio.exe.debug.toolchain.secoutput.839033486" name="Other" superClass="com.atollic.truestudio.exe.debug.toolchain.secoutput" />
-							<tool id="com.atollic.truestudio.ar.base.1583495701" name="Archiver" superClass="com.atollic.truestudio.ar.base" />
+							<tool id="com.atollic.truestudio.ar.base.1211394728" name="Archiver" superClass="com.atollic.truestudio.ar.base" />
 						</toolChain>
 					</folderInfo>
 					<fileInfo id="com.atollic.truestudio.exe.debug.311825581.983937533" name="" rcbsApplicability="disable" resourcePath="nofile" toolsToInvoke="com.atollic.truestudio.exe.debug.toolchain.gcc.1836874447.1976695455">
@@ -147,11 +147,11 @@
 				<configuration artifactExtension="elf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="com.atollic.truestudio.configuration.release.1518366166" name="Release" parent="com.atollic.truestudio.configuration.release" postbuildStep="arm-atollic-eabi-objcopy.exe -O ihex &quot;${BuildArtifactFileBaseName}.elf&quot; &quot;${BuildArtifactFileBaseName}.hex&quot;" prebuildStep="">
 					<folderInfo id="com.atollic.truestudio.configuration.release.1518366166.2031504340" name="/" resourcePath="">
 						<toolChain id="com.atollic.truestudio.exe.release.toolchain.683225115" name="Atollic ARM Tools" superClass="com.atollic.truestudio.exe.release.toolchain">
-							<option id="com.atollic.truestudio.general.runtimelib.976887405" superClass="com.atollic.truestudio.general.runtimelib" value="com.atollic.truestudio.ld.general.clib.small" valueType="enumerated" />
-							<option id="com.atollic.truestudio.toolchain_options.mcu.1148015930" superClass="com.atollic.truestudio.toolchain_options.mcu" value="STM32L053C8" valueType="string" />
-							<option id="com.atollic.truestudio.toolchain_options.vendor.1284401392" superClass="com.atollic.truestudio.toolchain_options.vendor" value="STMicroelectronics" valueType="string" />
+							<option id="com.atollic.truestudio.general.runtimelib.539261302" superClass="com.atollic.truestudio.general.runtimelib" value="com.atollic.truestudio.ld.general.clib.small" valueType="enumerated" />
+							<option id="com.atollic.truestudio.toolchain_options.mcu.948397533" superClass="com.atollic.truestudio.toolchain_options.mcu" value="STM32L053C8" valueType="string" />
+							<option id="com.atollic.truestudio.toolchain_options.vendor.1802747566" superClass="com.atollic.truestudio.toolchain_options.vendor" value="STMicroelectronics" valueType="string" />
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.atollic.truestudio.exe.release.toolchain.platform.2054752829" isAbstract="false" name="Release platform" superClass="com.atollic.truestudio.exe.release.toolchain.platform" />
-							<builder buildPath="${workspace_loc:/HeartRate_Development_Code}/Release" id="com.atollic.truestudio.mbs.builder1.1222194476" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="com.atollic.truestudio.mbs.builder1">
+							<builder buildPath="${workspace_loc:/HR_Development_CodeV2}/Release" id="com.atollic.truestudio.mbs.builder1.1222194476" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="com.atollic.truestudio.mbs.builder1">
 								<outputEntries>
 									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Release" />
 								</outputEntries>
@@ -246,7 +246,7 @@
 								<option id="com.atollic.truestudio.common_options.target.fpucore.1297069055" name="FPU" superClass="com.atollic.truestudio.common_options.target.fpucore" value="com.atollic.truestudio.common_options.target.fpucore.None" valueType="enumerated" />
 							</tool>
 							<tool id="com.atollic.truestudio.exe.release.toolchain.secoutput.839033486" name="Other" superClass="com.atollic.truestudio.exe.release.toolchain.secoutput" />
-							<tool id="com.atollic.truestudio.ar.base.1450992516" name="Archiver" superClass="com.atollic.truestudio.ar.base" />
+							<tool id="com.atollic.truestudio.ar.base.550528497" name="Archiver" superClass="com.atollic.truestudio.ar.base" />
 						</toolChain>
 					</folderInfo>
 					<fileInfo id="com.atollic.truestudio.exe.release.311825581.983937533" name="" rcbsApplicability="disable" resourcePath="nofile" toolsToInvoke="com.atollic.truestudio.exe.release.toolchain.gcc.1836874447.1976695455">
@@ -267,7 +267,7 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="HeartRate_Development_Code.com.atollic.truestudio.exe.1549124020" name="Executable" projectType="com.atollic.truestudio.exe" />
+		<project id="HR_Development_CodeV2.com.atollic.truestudio.exe.1549124020" name="Executable" projectType="com.atollic.truestudio.exe" />
 	</storageModule>
 	<storageModule moduleId="refreshScope" />
 	<storageModule moduleId="scannerConfiguration">
@@ -310,5 +310,4 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders" />
-	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets" />
 </cproject>
