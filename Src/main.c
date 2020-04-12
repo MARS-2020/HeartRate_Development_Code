@@ -105,13 +105,17 @@ int main(void)
   	//	asm("NOP");
   	//}
 
+  	HAL_Delay(100);
+
 	HR_APP_MODE(); //call function to put module in application mode
 	HR_MFIO_SET();
 
 	if(HR_INIT() == 1) //equals 1 means initialization failed - do something? make while loop that runs until it isnt 0?
 	 {
-		asm("NOP");
+ 		asm("NOP");
 	 }
+
+
 
   	//if(HR_SHUTDOWN() == 1)
   	//{
@@ -252,7 +256,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = HR_MFIO_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(HR_MFIO_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : HR_RESET_Pin */
@@ -289,7 +293,8 @@ void HR_MFIO_SET()
 {
 	  GPIO_InitTypeDef GPIO_InitStruct = {0};
 	  GPIO_InitStruct.Pin = HR_MFIO_Pin;
-	  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+	  //GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+	  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
 	  GPIO_InitStruct.Pull = GPIO_NOPULL;
 	  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 	  HAL_GPIO_Init(HR_MFIO_GPIO_Port, &GPIO_InitStruct);
@@ -349,8 +354,16 @@ uint8_t HR_INIT()
 	//1.2 - set output mode to sensor
 	uint8_t arr_1_2[3] = {0x10, 0x00, 0x03};
 	HAL_I2C_Master_Transmit(&hi2c1, writeAddr, arr_1_2, sizeof(arr_1_2), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
 	receive_buff = -1;
+	//HAL_Delay(20);
 	HAL_I2C_Master_Receive(&hi2c1, readAddr, &receive_buff, sizeof(receive_buff), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	while(receive_buff == 0xFE)
+	{
+		HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	}
 	if(receive_buff != 0x00)
 	{
 		return 1;
@@ -359,8 +372,16 @@ uint8_t HR_INIT()
 	//1.3 - Set sensor hub interrupt threshold
 	uint8_t arr_1_3[3] = {0x10, 0x01, 0x0F};
 	HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_1_3, sizeof(arr_1_3), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
 	receive_buff = -1;
+	//HAL_Delay(20);
 	HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	while(receive_buff == 0xFE)
+	{
+		HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	}
 	if(receive_buff != 0x00)
 	{
 		return 1;
@@ -369,9 +390,18 @@ uint8_t HR_INIT()
 	//1.4 - Enable AGC
 	uint8_t arr_1_4[3] = {0x52, 0x00, 0x01};
 	HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_1_4, sizeof(arr_1_4), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
 	receive_buff = -1;
-	HAL_Delay(20);
+	//HAL_Delay(20);
+
 	HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	while(receive_buff == 0xFE)
+	{
+		HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	}
+
 	if(receive_buff != 0x00)
 	{
 		return 1;
@@ -380,9 +410,16 @@ uint8_t HR_INIT()
 	//1.6 - Enable AFE
 	uint8_t arr_1_6[3] = {0x44, 0x03, 0x01};
 	HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_1_6, sizeof(arr_1_6), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
 	receive_buff = -1;
-	HAL_Delay(100);
+	//HAL_Delay(100);
 	HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	while(receive_buff == 0xFE)
+	{
+		HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	}
 	if(receive_buff != 0x00)
 	{
 		return 1;
@@ -391,9 +428,16 @@ uint8_t HR_INIT()
 	//1.7 - Enable HR/SpO2 Algorithm
 	uint8_t arr_1_7[3] = {0x52, 0x02, 0x01};
 	HAL_I2C_Master_Transmit(&hi2c1, 0xAA, arr_1_7, sizeof(arr_1_7), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
 	receive_buff = -1;
 	HAL_Delay(50);
 	HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	while(receive_buff == 0xFE)
+	{
+		HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_buff, sizeof(receive_buff), 1000);
+		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	}
 	if(receive_buff != 0x00)
 	{
 		return 1;
@@ -411,48 +455,66 @@ uint8_t HR_READ(uint8_t * receive_data)
 	uint16_t writeAddr = 0xAA;
 	uint16_t readAddr = 0xAB;
 	HAL_I2C_Master_Transmit(&hi2c1, writeAddr, arr_2_1, sizeof(arr_2_1), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
 	uint8_t receive_hub[2];
 	HAL_I2C_Master_Receive(&hi2c1, readAddr, receive_hub, sizeof(receive_hub), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
 	if(receive_hub[0] != 0x00)   //failed read
 	{
 		return 1;
 	}
 
+	/*
 	while(receive_hub[1] != 0x08)
 	{
 		HAL_I2C_Master_Transmit(&hi2c1, writeAddr, arr_2_1, sizeof(arr_2_1), 1000);
+		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
 		HAL_I2C_Master_Receive(&hi2c1, readAddr, receive_hub, sizeof(receive_hub), 1000);
+		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
 	}
+*/
 
-	//2.2 - get number of samples in FIFO
-	uint8_t arr_2_2[2] = {0x12, 0x00};
-	HAL_I2C_Master_Transmit(&hi2c1, writeAddr, arr_2_2, sizeof(arr_2_2), 1000);
-	HAL_I2C_Master_Receive(&hi2c1, readAddr, receive_hub, sizeof(receive_hub), 1000);
-	if(receive_hub[0] != 0x00)	//failed read
+	if(receive_hub[1] == 0x08)
 	{
+		//2.2 - get number of samples in FIFO
+		uint8_t arr_2_2[2] = {0x12, 0x00};
+		HAL_I2C_Master_Transmit(&hi2c1, writeAddr, arr_2_2, sizeof(arr_2_2), 1000);
+		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+		HAL_I2C_Master_Receive(&hi2c1, readAddr, receive_hub, sizeof(receive_hub), 1000);
+		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+		if(receive_hub[0] != 0x00)	//failed read
+		{
+			return 1;
+		}
+
+		//2.3 - read all samples from FIFO
+		uint8_t arr_2_3[2] = {0x12, 0x01};
+		HAL_I2C_Master_Transmit(&hi2c1, writeAddr, arr_2_3, sizeof(arr_2_3), 1000);
+		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+		HAL_I2C_Master_Receive(&hi2c1, readAddr, receive_data, 22, 1000);
+		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+
+		if(receive_data[18] == 0x03)
+		{
+			uint16_t heartrate  = ((((uint16_t) receive_data[13]) << 8) | (receive_data[14])) / 10;
+			uint8_t  HR_conf    =  receive_data[15];
+			uint16_t spo2  = ((((uint16_t) receive_data[16]) << 8) | (receive_data[17])) / 10;
+			uint8_t  alg_state  =  receive_data[18];
+			uint8_t  alg_status =  receive_data[19];
+
+			return 0;
+		}
+
 		return 1;
 	}
 
-	//2.3 - read all samples from FIFO
-	uint8_t arr_2_3[2] = {0x12, 0x01};
-	HAL_I2C_Master_Transmit(&hi2c1, writeAddr, arr_2_3, sizeof(arr_2_3), 1000);
-	HAL_I2C_Master_Receive(&hi2c1, readAddr, receive_data, 22, 1000);
-
-	if((receive_data[18] == 0x03) && (receive_data[19] == 0x00))
-	{
-		uint16_t heartrate  = ((((uint16_t) receive_data[13]) << 8) | (receive_data[14])) / 10;
-		uint8_t  HR_conf    =  receive_data[15];
-		uint16_t spo2  = ((((uint16_t) receive_data[16]) << 8) | (receive_data[17])) / 10;
-		uint8_t  alg_state  =  receive_data[18];
-		uint8_t  alg_status =  receive_data[19];
-	}
-
-	return 0;
+	return 1;
 }
 
 
 uint8_t HR_SHUTDOWN()
 {
+	/*
 	//3.1 - Disable the AFE
 	uint8_t arr_3_1[3] = {0x44, 0x03, 0x00};
 	uint16_t writeAddr = 0xAA;
@@ -461,6 +523,10 @@ uint8_t HR_SHUTDOWN()
 	uint8_t receive_off = -1;
 	HAL_Delay(100);
 	HAL_I2C_Master_Receive(&hi2c1, readAddr, &receive_off, sizeof(receive_off), 1000);
+	while(receive_off == 0xFE)
+	{
+		HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_off, sizeof(receive_off), 1000);
+	}
 	if(receive_off != 0x00)   //failed read
 	{
 		return 1;
@@ -471,10 +537,56 @@ uint8_t HR_SHUTDOWN()
 	HAL_I2C_Master_Transmit(&hi2c1, writeAddr, arr_3_3, sizeof(arr_3_3), 1000);
 	HAL_Delay(50);
 	HAL_I2C_Master_Receive(&hi2c1, readAddr, &receive_off, sizeof(receive_off), 1000);
+	while(receive_off == 0xFE)
+	{
+		HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_off, sizeof(receive_off), 1000);
+	}
 	if(receive_off != 0x00)   //failed read
 	{
 		return 1;
 	}
+*/
+
+	//SOFT RESET SENSOR
+
+	uint16_t writeAddr = 0xAA;
+	uint16_t readAddr = 0xAB;
+	uint8_t receive_off = -1;
+	uint8_t arr_x_x[4] = {0x40, 0x03, 0x09, 0x40};
+	HAL_I2C_Master_Transmit(&hi2c1, writeAddr, arr_x_x, sizeof(arr_x_x), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	//HAL_Delay(50);
+	HAL_I2C_Master_Receive(&hi2c1, readAddr, &receive_off, sizeof(receive_off), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	while(receive_off == 0xFE)
+	{
+		HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_off, sizeof(receive_off), 1000);
+		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	}
+	if(receive_off != 0x00)   //failed read
+	{
+		return 1;
+	}
+
+	//soft reset agc
+
+	uint8_t arr_x_y[3] = {0x01, 0x00, 0x02};
+	HAL_I2C_Master_Transmit(&hi2c1, writeAddr, arr_x_y, sizeof(arr_x_y), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	//HAL_Delay(50);
+	HAL_I2C_Master_Receive(&hi2c1, readAddr, &receive_off, sizeof(receive_off), 1000);
+	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	while(receive_off == 0xFE)
+	{
+		HAL_I2C_Master_Receive(&hi2c1, 0xAB, &receive_off, sizeof(receive_off), 1000);
+		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
+	}
+	if(receive_off != 0x00)   //failed read
+	{
+		return 1;
+	}
+
+
 
 	return 0;
 }
