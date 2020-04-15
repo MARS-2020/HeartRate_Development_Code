@@ -45,6 +45,13 @@ I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
 //uint8_t received_data[22] = {0};
+
+uint16_t heartrate  = 0;
+uint8_t  HR_conf    = 0;
+uint16_t spo2  		= 0;
+uint8_t  alg_state  = 0;
+uint8_t  alg_status = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -105,7 +112,7 @@ int main(void)
   	//	asm("NOP");
   	//}
 
-  	HAL_Delay(100);
+  	//HAL_Delay(100);
 
 	HR_APP_MODE(); //call function to put module in application mode
 	HR_MFIO_SET();
@@ -494,6 +501,7 @@ uint8_t HR_READ(uint8_t * receive_data)
 		HAL_I2C_Master_Receive(&hi2c1, readAddr, receive_data, 22, 1000);
 		while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
 
+		/*
 		if(receive_data[18] == 0x03)
 		{
 			uint16_t heartrate  = ((((uint16_t) receive_data[13]) << 8) | (receive_data[14])) / 10;
@@ -504,6 +512,14 @@ uint8_t HR_READ(uint8_t * receive_data)
 
 			return 0;
 		}
+*/
+
+
+		heartrate  = ((((uint16_t) receive_data[13]) << 8) | (receive_data[14])) / 10;
+		HR_conf    =  receive_data[15];
+		spo2  = ((((uint16_t) receive_data[16]) << 8) | (receive_data[17])) / 10;
+		alg_state  =  receive_data[18];
+		alg_status =  receive_data[19];
 
 		return 1;
 	}
