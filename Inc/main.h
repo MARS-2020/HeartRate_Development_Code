@@ -59,7 +59,7 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define HR_MFIO_Pin GPIO_PIN_15
-#define HR_MFIO_GPIO_Port GPIOA
+#define HR_MFIO_GPIO_Port GPIOC
 #define HR_RESET_Pin GPIO_PIN_5
 #define HR_RESET_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */

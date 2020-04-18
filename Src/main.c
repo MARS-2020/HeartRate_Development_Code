@@ -250,7 +250,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
@@ -263,7 +263,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = HR_MFIO_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(HR_MFIO_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : HR_RESET_Pin */
@@ -362,7 +362,7 @@ uint8_t HR_INIT()
 	uint8_t arr_1_2[3] = {0x10, 0x00, 0x03};
 	HAL_I2C_Master_Transmit(&hi2c1, writeAddr, arr_1_2, sizeof(arr_1_2), 1000);
 	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
-	receive_buff = -1;
+	receive_buff = -3;
 	//HAL_Delay(20);
 	HAL_I2C_Master_Receive(&hi2c1, readAddr, &receive_buff, sizeof(receive_buff), 1000);
 	while(((&hi2c1) -> State) != HAL_I2C_STATE_READY);
@@ -457,6 +457,7 @@ uint8_t HR_INIT()
 
 uint8_t HR_READ(uint8_t * receive_data)
 {
+
 	//2.1 - Data finished when bit3 of AA0000 is full (DATARDYINT)
 	uint8_t arr_2_1[2] = {0x00, 0x00};
 	uint16_t writeAddr = 0xAA;

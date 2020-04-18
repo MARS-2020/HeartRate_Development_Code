@@ -6,5 +6,5 @@ main.c:346:9:HR_INIT	56	static
 main.c:82:5:main	48	static
 main.c:458:9:HR_READ	48	static
 main.c:320:6:HAL_GPIO_EXTI_Callback	32	static
-main.c:531:9:HR_SHUTDOWN	48	static
-main.c:616:6:Error_Handler	0	static
+main.c:532:9:HR_SHUTDOWN	48	static
+main.c:617:6:Error_Handler	0	static
