@@ -1,0 +1,5 @@
+hr.c:15:6:HR_APP_MODE	16	static
+hr.c:34:6:HR_MFIO_SET	32	static
+hr.c:54:9:HR_INIT	56	static
+hr.c:170:9:HR_READ	48	static
+hr.c:249:9:HR_SHUTDOWN	48	static

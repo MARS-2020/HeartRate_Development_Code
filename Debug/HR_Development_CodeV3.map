@@ -1117,7 +1117,7 @@ LOAD c:/program files (x86)/atollic/truestudio for stm32 9.2.0/armtools/bin/../l
                 0x00000384       0x1e c:/program files (x86)/atollic/truestudio for stm32 9.2.0/armtools/bin/../lib/gcc/arm-atollic-eabi/6.3.1/armv6-m\libgcc.a(_dvmd_tls.o)
  .ARM.attributes
                 0x000003a2       0x1e c:/program files (x86)/atollic/truestudio for stm32 9.2.0/armtools/bin/../lib/gcc/arm-atollic-eabi/6.3.1/armv6-m/crtn.o
-OUTPUT(HR_Development_CodeV2.elf elf32-littlearm)
+OUTPUT(HR_Development_CodeV3.elf elf32-littlearm)
 
 .debug_info     0x00000000     0x9e72
  .debug_info    0x00000000      0x865 Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal.o

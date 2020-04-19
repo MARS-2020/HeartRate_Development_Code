@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/Users/Wendy M/Documents/GitHub/HR_Development_CodeV2/Inc
+HeaderPath=C:/Users/Wendy M/Documents/Senior Design/HR_Development_CodeV2/Inc
 HeaderFiles=stm32l0xx_it.h;stm32l0xx_hal_conf.h;main.h;
-SourcePath=C:/Users/Wendy M/Documents/GitHub/HR_Development_CodeV2/Src
+SourcePath=C:/Users/Wendy M/Documents/Senior Design/HR_Development_CodeV2/Src
 SourceFiles=stm32l0xx_it.c;stm32l0xx_hal_msp.c;main.c;
 
 [PreviousLibFiles]
