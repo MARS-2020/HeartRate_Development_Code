@@ -58,8 +58,13 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define HR_func_flag_Pin GPIO_PIN_13
+#define HR_func_flag_GPIO_Port GPIOC
 #define HR_MFIO_Pin GPIO_PIN_15
 #define HR_MFIO_GPIO_Port GPIOC
+#define GPIO_BLUE_Pin GPIO_PIN_0
+#define GPIO_BLUE_GPIO_Port GPIOA
+#define GPIO_BLUE_EXTI_IRQn EXTI0_1_IRQn
 #define HR_RESET_Pin GPIO_PIN_5
 #define HR_RESET_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */

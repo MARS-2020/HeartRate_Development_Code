@@ -20,12 +20,12 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "hr.h"
-
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stm32l0xx.h"
+#include "hr.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,9 +45,17 @@
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
 
+UART_HandleTypeDef huart1;
+
 /* USER CODE BEGIN PV */
 //uint8_t received_data[22] = {0};
-
+extern uint16_t heartrate;
+extern uint8_t  HR_conf;
+extern uint16_t spo2;
+extern uint8_t  alg_state;
+extern uint8_t  alg_status;
+extern uint8_t MAX_BUFF;
+extern uint8_t read_flag;
 
 /* USER CODE END PV */
 
@@ -55,6 +63,7 @@ I2C_HandleTypeDef hi2c1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 void EXTI2_TSC_IRQHandler(void);
@@ -98,6 +107,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
   	//if(HR_SHUTDOWN() == 1)
@@ -108,15 +118,21 @@ int main(void)
   	//HAL_Delay(100);
 
 	HR_APP_MODE(); //call function to put module in application mode
-	HR_MFIO_SET();
+	//HR_MFIO_SET();
+
+
 
 	if(HR_INIT() == 1) //equals 1 means initialization failed - do something? make while loop that runs until it isnt 0?
 	 {
  		asm("NOP");
 	 }
 
+	HR_MFIO_SET();
 
-
+	//if(HAL_GPIO_ReadPin(HR_MFIO_GPIO_Port, HR_MFIO_Pin) == 1)
+	//{
+	//	asm("nop");
+	//}
   	//if(HR_SHUTDOWN() == 1)
   	//{
   	//	asm("NOP");
@@ -133,11 +149,115 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  //uint8_t arr_1_2[3] = {0x10, 0x00, 0x03};
-//	  uint8_t arr = 0xA0;
-	 // uint16_t writeAddr = 0xAA;
-	 // HAL_I2C_Master_Transmit(&hi2c1, writeAddr, &arr, 1, 10);
-	 // HAL_Delay(5);
+/*
+	  uint8_t receive_data[22];
+	  //HAL_GPIO_WritePin(HR_MFIO_GPIO_Port, HR_MFIO_Pin, GPIO_PIN_SET);
+	  while(HAL_GPIO_ReadPin(HR_MFIO_GPIO_Port, HR_MFIO_Pin) == 1)
+	  {
+		asm("nop");
+	  }
+
+
+	  if(HAL_GPIO_ReadPin(HR_MFIO_GPIO_Port, HR_MFIO_Pin) == 0)
+	  {
+		  HR_READ(receive_data);
+		  HAL_GPIO_WritePin(HR_MFIO_GPIO_Port, HR_MFIO_Pin, GPIO_PIN_SET);
+	  }
+*/
+
+/*
+	  if(read_flag == 3)
+	  {
+			HAL_NVIC_DisableIRQ(EXTI4_15_IRQn);
+		  //pause_sensor();
+		  HAL_Delay(500);
+		  //HR_INIT();
+		  read_flag = 0;
+			HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
+	  }
+*/
+	  /*
+	  uint8_t HR[4];
+	  uint8_t SPO2[4];
+
+	  HR[3] = '\0';
+	  HR[2] = (heartrate % 10);
+	  HR[1] = ((heartrate/10) % 10);
+	  HR[0] = ((heartrate/100) % 10);
+
+	  SPO2[3] = '\0';
+	  SPO2[2] = (spo2 % 10);
+	  SPO2[1] = ((spo2/10) % 10);
+	  SPO2[0] = ((spo2/100) % 10);
+
+
+	  uint8_t HRCONF[2];
+	  uint8_t ALGSTATUS[2];
+	  uint8_t ALGSTATE[2];
+
+	  HRCONF[1] = '\0';
+	  HRCONF[0] = HR_conf;
+
+	  ALGSTATUS[1] = '\0';
+	  ALGSTATUS[0] = alg_status;
+
+	  ALGSTATE[1] = '\0';
+	  ALGSTATE[0] = alg_state;
+
+	  HAL_UART_Transmit(&huart1, HR, sizeof(HR), 1000); //set baud rate
+	  HAL_UART_Transmit(&huart1, HRCONF, sizeof(HRCONF), 1000); //set fix rate
+	  HAL_UART_Transmit(&huart1, SPO2, sizeof(SPO2), 1000); //set frequency
+	  HAL_UART_Transmit(&huart1, ALGSTATUS, sizeof(ALGSTATUS), 1000); //set sentence format
+	  HAL_UART_Transmit(&huart1, ALGSTATE, sizeof(ALGSTATE), 1000); //set sentence format
+*/
+
+
+
+
+/*
+	  if(read_flag == 3)
+	  {
+		HAL_Delay(5000);
+		read_flag = 0;
+		start();
+		HAL_Delay(40);
+		HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
+	  }
+*/
+		//uint8_t received_data[MAX_BUFF];
+
+	  /*
+		uint8_t arr_2_1[2] = {0x00, 0x00};
+		uint8_t received[2] = {-3, -3};
+		read_cmd(arr_2_1, sizeof(arr_2_1), received);
+		if(received[0] != 0x00)
+		{
+			return 1;
+		}
+
+		if((received[1] == 0x08) && (HAL_GPIO_ReadPin(HR_MFIO_GPIO_Port, HR_MFIO_Pin) == 0))
+		{
+			uint8_t received_data[MAX_BUFF];
+			HR_READ(received_data);
+			HAL_GPIO_WritePin(HR_MFIO_GPIO_Port, HR_MFIO_Pin, GPIO_PIN_SET);
+		}
+
+*/
+
+	  if(read_flag == 3)
+	  {
+		  read_flag = 0;
+		  HAL_Delay(1000);
+		  start30101();
+	  }
+
+	HAL_Delay(10);
+
+
+
+
+
+
   }
   /* USER CODE END 3 */
 }
@@ -179,7 +299,8 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1|RCC_PERIPHCLK_I2C1;
+  PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
   PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
@@ -234,6 +355,41 @@ static void MX_I2C1_Init(void)
 }
 
 /**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 9600;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -244,20 +400,27 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(HR_MFIO_GPIO_Port, HR_MFIO_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, HR_func_flag_Pin|HR_MFIO_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(HR_RESET_GPIO_Port, HR_RESET_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pin : HR_MFIO_Pin */
-  GPIO_InitStruct.Pin = HR_MFIO_Pin;
+  /*Configure GPIO pins : HR_func_flag_Pin HR_MFIO_Pin */
+  GPIO_InitStruct.Pin = HR_func_flag_Pin|HR_MFIO_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(HR_MFIO_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : GPIO_BLUE_Pin */
+  GPIO_InitStruct.Pin = GPIO_BLUE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIO_BLUE_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : HR_RESET_Pin */
   GPIO_InitStruct.Pin = HR_RESET_Pin;
@@ -266,12 +429,26 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(HR_RESET_GPIO_Port, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+
 }
 
 /* USER CODE BEGIN 4 */
 
 
-
+/*
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	HAL_NVIC_DisableIRQ(EXTI0_1_IRQn);
+	if(GPIO_Pin == GPIO_BLUE_Pin)
+	{
+		;
+	}
+	HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+}
+*/
 
 
 
@@ -288,17 +465,34 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	if(GPIO_Pin == HR_MFIO_Pin)
 	{
 		//do stuff now that the interrupt was set
-		uint8_t received_data[22];
-		uint8_t err_flag_read;
-		err_flag_read = HR_READ(received_data);
+		uint8_t received_data[MAX_BUFF];
+		//uint8_t flag_read;
+		//HAL_GPIO_WritePin(GPIOC, HR_func_flag_Pin, GPIO_PIN_SET);
+		HR_READ(received_data);
+		//HAL_GPIO_WritePin(GPIOC, HR_func_flag_Pin, GPIO_PIN_RESET);
 
-		if(err_flag_read == 1)
-		  {
-			  asm("NOP");
-		  }
+	//	if(flag_read == 3)
+	//	  {
+	//		  pause_sensor();
+
+
+	//		  uint8_t x = 0;
+		//	  while(x < 10000)
+		//	  {
+		//		  x = x + 1;
+		//	  }
+
+
+		//	  unpause_sensor();
+
+		//  }
+
 	}
 
-	HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
+	//if(read_flag != 3)
+	//{
+		HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
+	//}
 }
 
 
